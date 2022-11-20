@@ -9,7 +9,7 @@ const Player = function(name, marker) {
 // Game State module to keep information about the state of the game
 const GameState = (function(_player1, _player2) {
     let _curPlayer = _player1;
-    let _isFinished = false;
+    let _victory = false;
 
     // Changes the currently playing player
     const changeCurPlayer = () => {
@@ -20,13 +20,16 @@ const GameState = (function(_player1, _player2) {
         }
     }
  
-
+    const getVictory = () => _victory;
+    const setVictory = (victory) => _victory = victory;
     const getCurPlayer = () => _curPlayer;
-    const isGameFinished = () => _isFinished;
+    const isGameFinished = () => !!getVictory();
 
     return {
         changeCurPlayer,
         getCurPlayer,
+        getVictory,
+        setVictory,
         isGameFinished
     }
     
@@ -41,12 +44,28 @@ const GameBoard = (function(tableElement) {
         ['_', '_', '_']
     ]
 
+    const rowCoords = [
+        [[0, 0], [0, 1], [0, 2]],
+        [[1, 0], [1, 1], [1, 2]],
+        [[2, 0], [2, 1], [2, 2]]
+    ]
+
+    const colCoords = [
+        [[0, 0], [1, 0], [2, 0]],
+        [[0, 1], [1, 1], [2, 1]],
+        [[0, 2], [1, 2], [2, 2]]
+    ]
+
+    const diagCoords = [
+        [[0, 0], [1, 1], [2, 2]],
+        [[2, 0], [1, 1], [0, 2]]
+    ]
+
     // Places the Player marker in the board and in the DOM representation of the board
-    const _placeMarker = ({ target: clickedElement }) => {
+    const placeMarker = ({ target: clickedElement }) => {
         const { marker } = GameState.getCurPlayer();
         const [row, col] = clickedElement.dataset.coords.split(' ');
         _board[Number(row)][Number(col)] = clickedElement.textContent =  marker;
-        GameState.changeCurPlayer();
     }
 
     // Repeats an action, like a loop, but cleaner
@@ -65,7 +84,6 @@ const GameBoard = (function(tableElement) {
     const _makeCol = (x, y) => {
         const col = document.createElement('td');
         col.dataset.coords = `${x} ${y}`;
-        col.addEventListener('click', _placeMarker, { once: true });
         col.classList = 'square';
         return col;
     }
@@ -80,7 +98,7 @@ const GameBoard = (function(tableElement) {
 
     // Returns one copy of the boards in its current state
     const getBoard = () => [..._board.map(row => [...row])];
-
+    
     // Creates all the board elements and renders everything in the DOM
     const initialize = () => {
         _repeatAction((rowNum) => {
@@ -90,9 +108,20 @@ const GameBoard = (function(tableElement) {
         }, 3)
     }
 
+    const highlightSquares = (squares, coords) => {
+        coords.forEach(([x, y]) => {
+            (squares[x][y]).classList.add('highlight')
+        })
+    }
+
     return {
         initialize,
-        getBoard
+        placeMarker,
+        getBoard,
+        highlightSquares,
+        rowCoords,
+        colCoords,
+        diagCoords
     }
 
 })(document.querySelector('table'))
@@ -100,4 +129,50 @@ const GameBoard = (function(tableElement) {
 // Ties everything together to make the game work
 const Brain = (function() {
     GameBoard.initialize();
+    const allSquares = [...document.querySelectorAll('.square')];
+
+    const _chunk = (arr, size) => {
+        if(arr.length <= size) return [arr];
+        const cur = arr.slice(0, size);
+        const rest = _chunk(arr.slice(size), size);
+        return [cur, ...rest];
+    }
+
+    const _checkSquares = (array, board) => {
+        for(let arr of array) {
+            const markerString = arr.map(([x, y]) => board[x][y]).join('');
+            if(/X{3}|O{3}/.test(markerString)) {
+                return arr;
+            }
+        }
+    };
+    
+    const _checkVictory = () => {
+        const board = GameBoard.getBoard();
+        const {rowCoords, colCoords, diagCoords} = GameBoard;
+        const victoryRow = _checkSquares(rowCoords, board);
+        const victoryCol = _checkSquares(colCoords, board);
+        const victoryDiag = _checkSquares(diagCoords, board);
+        return victoryRow || victoryCol || victoryDiag;
+    }
+    
+    const _end = () => {
+        console.log(GameState.getCurPlayer());
+    }
+
+    const _play = (event) => {
+        if(GameState.isGameFinished()) return;
+        GameBoard.placeMarker(event);
+
+        const victoryCoords = _checkVictory();
+        if(victoryCoords) {
+            GameState.setVictory(_checkVictory());
+            GameBoard.highlightSquares(_chunk(allSquares, 3), victoryCoords);
+            _end();
+        } else {
+            GameState.changeCurPlayer();
+        }
+    }
+
+    allSquares.forEach(square => square.addEventListener('click', _play, { once: true }));
 })()

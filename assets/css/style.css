@@ -1,5 +1,24 @@
+table {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+tr {
+    display: flex;
+    gap: .5rem;
+}
+
 .square {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     background-color: lightgray;
     width: 50px;
     height: 50px;
+}
+
+.highlight {
+    color: blue;
 }
