@@ -18,7 +18,6 @@ export default function Square(position){
     DOMSquare.textContent = STARTING_MARK;
     DOMSquare.classList.remove('highlight');
     mark = '';
-
   }
 
   return {
