@@ -8,7 +8,7 @@ export default (function(){
         }
     })
 
-    const timedDisplay = (toShow = [], toHide = [], time = 3000, toExecute = []) => {
+    const timedDisplay = (toShow = [], toHide = [], time = 1000, toExecute = []) => {
         setTimeout(() => {
             toShow.forEach(element => element.show && element.show());
             toExecute.forEach(fn => fn());

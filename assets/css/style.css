@@ -9,7 +9,7 @@
     --body-bg: rgb(55, 55, 55);
     --font-color: #fff;
     --square-size: 50px;
-    --highlight-color: rgb(30, 113, 180);
+    --main-green: rgb(48, 173, 121);
     --modal-bg: rgba(0, 0, 0, 0.267);
 }
 
@@ -37,7 +37,9 @@ body {
 .winner-container {
     padding: 3rem;
     width: 100%;
-    background-color: lightgreen;
+    background-color: var(--main-green);
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
 }
 
 table {
@@ -85,7 +87,7 @@ tr {
 }
 
 .highlight {
-    color: var(--highlight-color);
+    color: var(--main-green);
 }
 
 .hide {

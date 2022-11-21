@@ -96,11 +96,15 @@ export default (function (_player1, _player2) {
 
     const _isTie = () => GameState._movesMade >= 9;
 
-    // Restarts the game after a match
-    const _restart = () => {
+    const _restartState = () => {
         GameState._curPlayer = GameState._player1;
         GameState._victory = false;
         GameState._movesMade = 0;
+    }
+
+    // Restarts the game after a match
+    const _restart = () => {
+        _restartState()
         GameBoard.resetBoard();
     }
 
@@ -117,7 +121,7 @@ export default (function (_player1, _player2) {
         GameDisplay.timedDisplay(
             [GameDisplay.winnerScreen],
             [GameDisplay.winnerScreen],
-            3000,
+            2000,
             [_restart]
         )
     }
