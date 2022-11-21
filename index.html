@@ -7,9 +7,9 @@
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
-<body>
-    <main>
-        <div class="start-screen">
+<body class="centralize">
+    <main class="centralize flex-col">
+        <div class="start-screen centralize flex-col">
             <h1>Tic Tac Toe</h1>
             <form class="start-form" action="">
                 <label for="">Player 1</label>
@@ -21,20 +21,20 @@
         </div>
         <div class="names hide">
             <span>
-                <span class="player1-name"></span>
+                <span class="player1-name"></span>:
                 <span class="player1-score">0</span>
             </span>
             <span>
-                <span class="player2-name"></span>
+                <span class="player2-name"></span>:
                 <span class="player2-score">0</span>
             </span>
         </div>
         <div class="winner-screen hide">
-            <h1>The winner is: <span class="winner"></span></h1>
+            <h1><span class="winner"></span></h1>
         </div>
+        <table>
+        </table>
     </main>
-    <table>
-    </table>
     <script src="./assets/js/Player.js" type="module"></script>
     <script src="./assets/js/GameBoard.js" type="module"></script>
     <script src="./assets/js/GameDisplay.js" type="module"></script>

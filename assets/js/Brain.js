@@ -10,7 +10,8 @@ export default (function(_player1, _player2) {
         _player1: null,
         _player2: null,
         _curPlayer: null,
-        _victory: false
+        _victory: false,
+        _movesMade: 0
     }
 
     // Defines the players by name
@@ -44,7 +45,8 @@ export default (function(_player1, _player2) {
     // Increments the winner score
     const _incrementScore = () => {
         GameState._curPlayer.score++;
-        GameDisplay[`player${GameState._curPlayer.order}Score`].textContent = GameState._curPlayer.score;
+        const curPlayerClass = `player${GameState._curPlayer.order}Score`;
+        GameDisplay[curPlayerClass].textContent = GameState._curPlayer.score;
     }
 
     /*
@@ -95,34 +97,54 @@ export default (function(_player1, _player2) {
         return victoryRow || victoryCol || victoryDiag;
     }
 
+    const _isTie = () => GameState._movesMade >= 9;
+
     // Restarts the game after a match
     const _restart = () => {
-        GameState._curPlayer = GameState._player1;
-        GameState._victory = false;
-        GameBoard.resetBoard();
+        setTimeout(() => {
+            GameState._curPlayer = GameState._player1;
+            GameState._victory = false;
+            GameState._movesMade = 0;
+            GameBoard.resetBoard();
+        }, 3000);
     }
     
     // Ends the game when there is a winner or a tie
-    const _end = () => {
-        _incrementScore();
-        GameDisplay.winnerName.textContent = GameState._curPlayer.name;
+    const _end = (tie) => {
+        if(!tie) {
+            _incrementScore();
+            const winnerString = `The winner is: ${GameState._curPlayer.name}`;
+            GameDisplay.winnerName.textContent = winnerString;
+        } else {
+            GameDisplay.winnerName.textContent = "It's a tie";
+        }
+
         GameDisplay.winnerScreen.show();
         _restart();
+    }
+
+    const _defineVictory = (victoryCoords) => {
+        GameState._victory = victoryCoords;
+        GameBoard.highlightSquares(GameBoard.getChunkedDOMBoard(), victoryCoords);
+        _end(false);
+    }
+
+    const _handleChange = () => {
+        GameState._movesMade++;
+        const victoryCoords = _checkVictory();
+
+        if(victoryCoords) {
+            _defineVictory(victoryCoords);
+        } else {
+            _isTie()? _end(true) : _changeCurPlayer();
+        }
     }
 
     // Keeps the game running or stops it when necessary. Makes possible to actually play
     const _play = (event) => {
         if(_isGameFinished() || GameBoard.isMarked(event)) return;
         GameBoard.placeMarker(event, GameState._curPlayer);
-
-        const victoryCoords = _checkVictory();
-        if(victoryCoords) {
-            GameState._victory = victoryCoords;
-            GameBoard.highlightSquares(GameBoard.getChunkedDOMBoard(), victoryCoords);
-            _end();
-        } else {
-            _changeCurPlayer();
-        }
+        _handleChange();
     }
 
     startForm.addEventListener('submit', startGame);

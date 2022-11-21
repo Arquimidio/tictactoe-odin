@@ -24,14 +24,6 @@ export default (function(tableElement) {
         [[2, 0], [1, 1], [0, 2]]
     ]
 
-    // Chunks an array based on the given size of the chunks
-    const _chunk = (arr, size) => {
-        if(arr.length <= size) return [arr];
-        const cur = arr.slice(0, size);
-        const rest = _chunk(arr.slice(size), size);
-        return [cur, ...rest];
-    }
-
     // Returns one copy of the boards in its current state
     const getBoard = () => [..._board.map(row => [...row])]
 
@@ -40,8 +32,8 @@ export default (function(tableElement) {
 
     // Returns a Tic Tac Toe Chunked copy of the DOM Board
     const getChunkedDOMBoard = () => {
-        const squareArr = getDOMBoard();
-        return _chunk(squareArr, 3)
+        const tableRows = [...document.querySelectorAll('tr')];
+        return tableRows.map(row => [...row.querySelectorAll('td')]);
     }
 
     // Gets the coordinates from the dataset of the DOMSquare
