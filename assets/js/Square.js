@@ -1,24 +1,27 @@
-export default function Square(position){
+export default function Square(table, position){
   const STARTING_MARK = '';
   let mark = STARTING_MARK;
+  
+  const squareElement = document.createElement('td');
+  squareElement.dataset.pos = position;
+  squareElement.classList.add('square');
 
-  const _getByPos = () => document.querySelector(`[data-pos="${position}"]`);
-  const highlight = () => _getByPos().classList.add('highlight');
+  const highlight = () => squareElement.classList.add('highlight');
   const isChecked = () => !!mark;
   const getMark = () => mark;
 
   const check = (givenMark) => {
-    const DOMSquare = _getByPos();
-    DOMSquare.textContent = givenMark;
+    squareElement.textContent = givenMark;
     mark = givenMark;
   }
 
   const uncheck = () => {
-    const DOMSquare = _getByPos();
-    DOMSquare.textContent = STARTING_MARK;
-    DOMSquare.classList.remove('highlight');
+    squareElement.textContent = STARTING_MARK;
+    squareElement.classList.remove('highlight');
     mark = '';
   }
+
+  table.append(squareElement);
 
   return {
     check,
