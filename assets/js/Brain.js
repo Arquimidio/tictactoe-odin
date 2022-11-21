@@ -79,8 +79,9 @@ export default (function(_player1, _player2) {
 
     // Verifies if the given array consist in a winner sequence ('XXX' or 'OOO')
     const _checkSquares = (array, board) => {
+        console.log(board.map(square => square.getMark()))
         for(let arr of array) {
-            const markerString = arr.map(pos => board[pos]).join('');
+            const markerString = arr.map(pos => board[pos].getMark()).join('');
             if(/X{3}|O{3}/.test(markerString)) {
                 return arr;
             }
@@ -121,7 +122,7 @@ export default (function(_player1, _player2) {
 
     const _defineVictory = (victoryCoords) => {
         GameState._victory = victoryCoords;
-        GameBoard.highlightSquares(GameBoard.getDOMBoard(), victoryCoords);
+        GameBoard.highlightSquares(victoryCoords);
         _end(false);
     }
 
@@ -139,7 +140,7 @@ export default (function(_player1, _player2) {
     // Keeps the game running or stops it when necessary. Makes possible to actually play
     const _play = (event) => {
         if(_isGameFinished() || GameBoard.isMarked(event)) return;
-        console.log('fuck2')
+
         GameBoard.placeMarker(event, GameState._curPlayer);
         _handleChange();
     }

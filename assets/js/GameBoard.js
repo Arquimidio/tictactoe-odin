@@ -1,11 +1,8 @@
+import Square from "./Square.js";
 // Game Board module to keep information about the game board
 export default (function(tableElement) {
-
-    const _board = [
-        '', '', '',
-        '', '', '',
-        '', '', ''
-    ]
+    const _genBoard = () => [...Array(9)].map((_, pos) => Square(pos));
+    const _board = _genBoard();
 
     const winnerSequences = [
         [0, 1, 2],
@@ -30,15 +27,14 @@ export default (function(tableElement) {
     const placeMarker = ({ target: clickedElement }, curPlayer) => {
         const { marker } = curPlayer;
         const pos = getPos(clickedElement);
-        _board[pos] = marker;
-        clickedElement.textContent = marker;
+        const square = _board[pos];
+        square.check(marker);
     }
 
     // Verifies if a specific square is marked in the _board
     const isMarked = ({ target: clickedElement }) => {
         const pos = getPos(clickedElement);
-        console.log(pos)
-        return !!_board[pos];
+        return _board[pos].isChecked();
     }
 
     // Repeats an action, like a loop, but cleaner
@@ -79,30 +75,16 @@ export default (function(tableElement) {
     }
 
     // Highlights the winner sequence
-    const highlightSquares = (squares, positions) => {
+    const highlightSquares = (positions) => {
         positions.forEach(pos => {
-            squares[pos].classList.add('highlight')
+            const square = _board[pos];
+            square.highlight();
         })
     }
 
     // Reset all the squares of the _board, removing the marks
-    const _resetSquares = () => {
-        _board.forEach((pos, i) => _board[i] = '');
-    }
-
-    // Reset all the squares of the DOMBoard, removing the marks and the highlights-
-    const _resetDOMSquares = () => {
-        const renderedBoard = getDOMBoard();
-        renderedBoard.forEach(square => {
-            square.classList.remove('highlight');
-            square.textContent = '';
-        })
-    }
-
-    // Resets both boards
     const resetBoard = () => {
-        _resetSquares(),
-        _resetDOMSquares()
+        _board.forEach(square => square.uncheck());
     }
 
     return {
