@@ -8,15 +8,20 @@
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-    <main class="start-screen">
-        <h1>Tic Tac Toe</h1>
-        <form class="start-form" action="">
-            <label for="">Player 1</label>
-            <input name="player1" type="text" required>
-            <label for="">Player 2</label>
-            <input name="player2" type="text" required>
-            <button>Start</button>
-        </form>
+    <main>
+        <div class="start-screen">
+            <h1>Tic Tac Toe</h1>
+            <form class="start-form" action="">
+                <label for="">Player 1</label>
+                <input name="player1" type="text" required>
+                <label for="">Player 2</label>
+                <input name="player2" type="text" required>
+                <button>Start</button>
+            </form>
+        </div>
+        <div class="winner-screen hide">
+            <h1>The winner is: <span class="winner"></span></h1>
+        </div>
     </main>
     <table>
     </table>

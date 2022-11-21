@@ -22,3 +22,7 @@ tr {
 .highlight {
     color: blue;
 }
+
+.hide {
+    display: none;
+}

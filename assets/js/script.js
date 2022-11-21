@@ -121,6 +121,29 @@ const GameBoard = (function(tableElement) {
 
 })(document.querySelector('table'))
 
+const GameDisplay = (function(){
+    const controlDisplay = function(element) {
+        return {
+            show(){
+                element.classList.remove('hide')
+            },
+            hide() {
+                element.classList.add('hide')
+            }
+        }
+    }
+
+    const menu = controlDisplay(document.querySelector('.start-screen'));
+    const winnerScreen = controlDisplay(document.querySelector('.winner-screen'));
+    const winnerName = document.querySelector('.winner');
+
+    return {
+        menu,
+        winnerScreen,
+        winnerName
+    }
+})()
+
 // Ties everything together to make the game work
 const Brain = (function(_player1, _player2) {
     const startForm = document.querySelector('.start-form');
@@ -142,6 +165,7 @@ const Brain = (function(_player1, _player2) {
         GameState._curPlayer = _player1;
         const allSquares = [...document.querySelectorAll('.square')];
         allSquares.forEach(square => square.addEventListener('click', _play));
+        GameDisplay.menu.hide();
     }
 
     // Changes the currently playing player
@@ -174,7 +198,8 @@ const Brain = (function(_player1, _player2) {
     }
     
     const _end = () => {
-        console.log(GameState._curPlayer);
+        GameDisplay.winnerName.textContent = GameState._curPlayer.name;
+        GameDisplay.winnerScreen.show();
     }
 
     const _play = (event) => {
