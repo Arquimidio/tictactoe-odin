@@ -24,6 +24,7 @@ export default (function(tableElement) {
         [[2, 0], [1, 1], [0, 2]]
     ]
 
+    // Chunks an array based on the given size of the chunks
     const _chunk = (arr, size) => {
         if(arr.length <= size) return [arr];
         const cur = arr.slice(0, size);
@@ -32,15 +33,18 @@ export default (function(tableElement) {
     }
 
     // Returns one copy of the boards in its current state
-    const getBoard = () => [..._board.map(row => [...row])];
+    const getBoard = () => [..._board.map(row => [...row])]
 
+    // Returns a flat copy of the DOM Board
     const getDOMBoard = () => [...document.querySelectorAll('.square')];
 
+    // Returns a Tic Tac Toe Chunked copy of the DOM Board
     const getChunkedDOMBoard = () => {
         const squareArr = getDOMBoard();
         return _chunk(squareArr, 3)
     }
 
+    // Gets the coordinates from the dataset of the DOMSquare
     const _getCoords = (element) => {
         return element.dataset.coords.split(' ');
     }
@@ -53,6 +57,7 @@ export default (function(tableElement) {
         clickedElement.textContent = marker;
     }
 
+    // Verifies if a specific square is marked in the _board
     const isMarked = ({ target: clickedElement }) => {
         const [row, col] = _getCoords(clickedElement);
         return !!_board[row][col];
@@ -95,18 +100,21 @@ export default (function(tableElement) {
         }, 3)
     }
 
+    // Highlights the winner sequence
     const highlightSquares = (squares, coords) => {
         coords.forEach(([x, y]) => {
             (squares[x][y]).classList.add('highlight')
         })
     }
 
+    // Reset all the squares of the _board, removing the marks
     const _resetSquares = () => {
         _board.forEach((row, i) => {
             row.forEach((col, j) => _board[i][j] = '');
         })
     }
 
+    // Reset all the squares of the DOMBoard, removing the marks and the highlights-
     const _resetDOMSquares = () => {
         const renderedBoard = getDOMBoard();
         renderedBoard.forEach(square => {
@@ -115,6 +123,7 @@ export default (function(tableElement) {
         })
     }
 
+    // Resets both boards
     const resetBoard = () => {
         _resetSquares(),
         _resetDOMSquares()
