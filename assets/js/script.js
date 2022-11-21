@@ -1,8 +1,10 @@
 // Factory that creates Player objects
-const Player = function(name, marker) {
+const Player = function(order, name, marker) {
     return {
+        order,
         name,
-        marker
+        marker,
+        score: 0
     }
 }
 
@@ -39,8 +41,13 @@ const GameBoard = (function(tableElement) {
         return [cur, ...rest];
     }
 
-    const getDOMBoard = () => {
-        const squareArr = [...document.querySelectorAll('.square')];
+    // Returns one copy of the boards in its current state
+    const getBoard = () => [..._board.map(row => [...row])];
+
+    const getDOMBoard = () => [...document.querySelectorAll('.square')];
+
+    const getChunkedDOMBoard = () => {
+        const squareArr = getDOMBoard();
         return _chunk(squareArr, 3)
     }
 
@@ -88,12 +95,9 @@ const GameBoard = (function(tableElement) {
         }, 3);
         return row;
     }
-
-    // Returns one copy of the boards in its current state
-    const getBoard = () => [..._board.map(row => [...row])];
     
     // Creates all the board elements and renders everything in the DOM
-    const initialize = () => {
+    const init = () => {
         _repeatAction((rowNum) => {
             const row = _makeRow();
             _fillRow(row, rowNum);
@@ -107,11 +111,31 @@ const GameBoard = (function(tableElement) {
         })
     }
 
+    const _resetSquares = () => {
+        _board.forEach((row, i) => {
+            row.forEach((col, j) => _board[i][j] = '');
+        })
+    }
+
+    const _resetDOMSquares = () => {
+        const renderedBoard = getDOMBoard();
+        renderedBoard.forEach(square => {
+            square.classList.remove('highlight');
+            square.textContent = '';
+        })
+    }
+
+    const resetBoard = () => {
+        _resetSquares(),
+        _resetDOMSquares()
+    }
+
     return {
-        initialize,
+        init,
         placeMarker,
         getBoard,
-        getDOMBoard,
+        getChunkedDOMBoard,
+        resetBoard,
         highlightSquares,
         isMarked,
         rowCoords,
@@ -122,25 +146,33 @@ const GameBoard = (function(tableElement) {
 })(document.querySelector('table'))
 
 const GameDisplay = (function(){
-    const controlDisplay = function(element) {
-        return {
-            show(){
-                element.classList.remove('hide')
-            },
-            hide() {
-                element.classList.add('hide')
-            }
+    const controlDisplay = (element) => ({
+        show(){
+            element.classList.remove('hide')
+        },
+        hide() {
+            element.classList.add('hide')
         }
-    }
+    })
 
     const menu = controlDisplay(document.querySelector('.start-screen'));
+    const names = controlDisplay(document.querySelector('.names'))
     const winnerScreen = controlDisplay(document.querySelector('.winner-screen'));
     const winnerName = document.querySelector('.winner');
+    const player1Name = document.querySelector('.player1-name');
+    const player1Score = document.querySelector('.player1-score');
+    const player2Name = document.querySelector('.player2-name');
+    const player2Score = document.querySelector('.player2-score');
 
     return {
         menu,
+        names,
         winnerScreen,
-        winnerName
+        winnerName,
+        player1Score,
+        player1Name,
+        player2Score,
+        player2Name
     }
 })()
 
@@ -155,16 +187,36 @@ const Brain = (function(_player1, _player2) {
         _victory: false
     }
 
-    const startGame = (event) => {
-        event.preventDefault();
-        GameBoard.initialize()
+    const _setPlayers = () => {
         const data = [...new FormData(startForm).values()];
         const [_player1, _player2] = data;
-        GameState._player1 = Player(_player1, 'X');
-        GameState._player2 = Player(_player2, 'O');
-        GameState._curPlayer = _player1;
+        GameState._player1 = Player(1, _player1, 'X');
+        GameState._player2 = Player(2, _player2, 'O');
+        GameState._curPlayer = GameState._player1;
+    }
+
+    const _initSquares = () => {
         const allSquares = [...document.querySelectorAll('.square')];
         allSquares.forEach(square => square.addEventListener('click', _play));
+    }
+
+    const _showNames = () => {
+        GameDisplay.player1Name.textContent = GameState._player1.name;
+        GameDisplay.player2Name.textContent = GameState._player2.name;
+        GameDisplay.names.show();
+    }
+
+    const _incrementScore = () => {
+        GameState._curPlayer.score++;
+        GameDisplay[`player${GameState._curPlayer.order}Score`].textContent = GameState._curPlayer.score;
+    }
+
+    const startGame = (event) => {
+        event.preventDefault();
+        GameBoard.init();
+        _setPlayers();
+        _showNames();
+        _initSquares();
         GameDisplay.menu.hide();
     }
 
@@ -196,10 +248,18 @@ const Brain = (function(_player1, _player2) {
         const victoryDiag = _checkSquares(diagCoords, board);
         return victoryRow || victoryCol || victoryDiag;
     }
+
+    const _restart = () => {
+        GameState._curPlayer = GameState._player1;
+        GameState._victory = false;
+        GameBoard.resetBoard();
+    }
     
     const _end = () => {
+        _incrementScore();
         GameDisplay.winnerName.textContent = GameState._curPlayer.name;
         GameDisplay.winnerScreen.show();
+        _restart();
     }
 
     const _play = (event) => {
@@ -209,7 +269,7 @@ const Brain = (function(_player1, _player2) {
         const victoryCoords = _checkVictory();
         if(victoryCoords) {
             GameState._victory = victoryCoords;
-            GameBoard.highlightSquares(GameBoard.getDOMBoard(), victoryCoords);
+            GameBoard.highlightSquares(GameBoard.getChunkedDOMBoard(), victoryCoords);
             _end();
         } else {
             _changeCurPlayer();
