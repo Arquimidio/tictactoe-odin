@@ -8,6 +8,16 @@ export default (function(){
         }
     })
 
+    const timedDisplay = (toShow = [], toHide = [], time = 3000, toExecute = []) => {
+        setTimeout(() => {
+            toShow.forEach(element => element.show && element.show());
+            toExecute.forEach(fn => fn());
+            setTimeout(() => {
+                toShow.forEach(element => element.hide && element.hide());
+            }, time)
+        }, time)
+    } 
+
     const menu = controlDisplay(document.querySelector('.start-screen'));
     const names = controlDisplay(document.querySelector('.names'))
     const winnerScreen = controlDisplay(document.querySelector('.winner-screen'));
@@ -18,6 +28,7 @@ export default (function(){
     const player2Score = document.querySelector('.player2-score');
 
     return {
+        timedDisplay,
         menu,
         names,
         winnerScreen,

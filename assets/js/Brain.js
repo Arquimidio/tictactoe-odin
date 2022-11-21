@@ -2,7 +2,7 @@ import Player from './Player.js'
 import GameBoard from './GameBoard.js'
 import GameDisplay from './GameDisplay.js'
 
-export default (function(_player1, _player2) {
+export default (function (_player1, _player2) {
     const startForm = document.querySelector('.start-form');
 
     // Keeps track of the state of the game
@@ -67,27 +67,27 @@ export default (function(_player1, _player2) {
 
     // Changes the currently playing player
     const _changeCurPlayer = () => {
-        if(GameState._curPlayer === GameState._player1) {
+        if (GameState._curPlayer === GameState._player1) {
             GameState._curPlayer = GameState._player2;
         } else {
             GameState._curPlayer = GameState._player1;
         }
     }
- 
+
     // Returns a boolean with the current state of the game
     const _isGameFinished = () => !!GameState._victory;
 
     // Verifies if the given array consist in a winner sequence ('XXX' or 'OOO')
     const _checkSquares = (array, board) => {
         console.log(board.map(square => square.getMark()))
-        for(let arr of array) {
+        for (let arr of array) {
             const markerString = arr.map(pos => board[pos].getMark()).join('');
-            if(/X{3}|O{3}/.test(markerString)) {
+            if (/X{3}|O{3}/.test(markerString)) {
                 return arr;
             }
         }
     };
-    
+
     // Checks if any row, column or diagonal consists in a winner sequence
     const _checkVictory = () => {
         const board = GameBoard.getBoard();
@@ -98,17 +98,15 @@ export default (function(_player1, _player2) {
 
     // Restarts the game after a match
     const _restart = () => {
-        setTimeout(() => {
-            GameState._curPlayer = GameState._player1;
-            GameState._victory = false;
-            GameState._movesMade = 0;
-            GameBoard.resetBoard();
-        }, 3000);
+        GameState._curPlayer = GameState._player1;
+        GameState._victory = false;
+        GameState._movesMade = 0;
+        GameBoard.resetBoard();
     }
-    
+
     // Ends the game when there is a winner or a tie
     const _end = (tie) => {
-        if(!tie) {
+        if (!tie) {
             _incrementScore();
             const winnerString = `The winner is: ${GameState._curPlayer.name}`;
             GameDisplay.winnerName.textContent = winnerString;
@@ -116,8 +114,12 @@ export default (function(_player1, _player2) {
             GameDisplay.winnerName.textContent = "It's a tie";
         }
 
-        GameDisplay.winnerScreen.show();
-        _restart();
+        GameDisplay.timedDisplay(
+            [GameDisplay.winnerScreen],
+            [GameDisplay.winnerScreen],
+            3000,
+            [_restart]
+        )
     }
 
     const _defineVictory = (victoryCoords) => {
@@ -130,16 +132,16 @@ export default (function(_player1, _player2) {
         GameState._movesMade++;
         const victoryCoords = _checkVictory();
 
-        if(victoryCoords) {
+        if (victoryCoords) {
             _defineVictory(victoryCoords);
         } else {
-            _isTie()? _end(true) : _changeCurPlayer();
+            _isTie() ? _end(true) : _changeCurPlayer();
         }
     }
 
     // Keeps the game running or stops it when necessary. Makes possible to actually play
     const _play = (event) => {
-        if(_isGameFinished() || GameBoard.isMarked(event)) return;
+        if (_isGameFinished() || GameBoard.isMarked(event)) return;
 
         GameBoard.placeMarker(event, GameState._curPlayer);
         _handleChange();
@@ -147,4 +149,3 @@ export default (function(_player1, _player2) {
 
     startForm.addEventListener('submit', startGame);
 })()
-
