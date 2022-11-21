@@ -2,57 +2,43 @@
 export default (function(tableElement) {
 
     const _board = [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', '']
+        '', '', '',
+        '', '', '',
+        '', '', ''
     ]
 
-    const rowCoords = [
-        [[0, 0], [0, 1], [0, 2]],
-        [[1, 0], [1, 1], [1, 2]],
-        [[2, 0], [2, 1], [2, 2]]
-    ]
-
-    const colCoords = [
-        [[0, 0], [1, 0], [2, 0]],
-        [[0, 1], [1, 1], [2, 1]],
-        [[0, 2], [1, 2], [2, 2]]
-    ]
-
-    const diagCoords = [
-        [[0, 0], [1, 1], [2, 2]],
-        [[2, 0], [1, 1], [0, 2]]
+    const winnerSequences = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
     ]
 
     // Returns one copy of the boards in its current state
-    const getBoard = () => [..._board.map(row => [...row])]
+    const getBoard = () => [..._board];
 
     // Returns a flat copy of the DOM Board
     const getDOMBoard = () => [...document.querySelectorAll('.square')];
 
-    // Returns a Tic Tac Toe Chunked copy of the DOM Board
-    const getChunkedDOMBoard = () => {
-        const tableRows = [...document.querySelectorAll('tr')];
-        return tableRows.map(row => [...row.querySelectorAll('td')]);
-    }
-
-    // Gets the coordinates from the dataset of the DOMSquare
-    const _getCoords = (element) => {
-        return element.dataset.coords.split(' ');
-    }
+    const getPos = ({ dataset: { pos } }) => Number(pos); 
 
     // Places the Player marker in the board and in the DOM representation of the board
     const placeMarker = ({ target: clickedElement }, curPlayer) => {
         const { marker } = curPlayer;
-        const [row, col] = _getCoords(clickedElement);
-        _board[Number(row)][Number(col)] = marker;
+        const pos = getPos(clickedElement);
+        _board[pos] = marker;
         clickedElement.textContent = marker;
     }
 
     // Verifies if a specific square is marked in the _board
     const isMarked = ({ target: clickedElement }) => {
-        const [row, col] = _getCoords(clickedElement);
-        return !!_board[row][col];
+        const pos = getPos(clickedElement);
+        console.log(pos)
+        return !!_board[pos];
     }
 
     // Repeats an action, like a loop, but cleaner
@@ -70,7 +56,7 @@ export default (function(tableElement) {
     // Creates one board column and returns it
     const _makeCol = (x, y) => {
         const col = document.createElement('td');
-        col.dataset.coords = `${x} ${y}`;
+        col.dataset.pos = x * 3 + y;
         col.classList = 'square';
         return col;
     }
@@ -93,17 +79,15 @@ export default (function(tableElement) {
     }
 
     // Highlights the winner sequence
-    const highlightSquares = (squares, coords) => {
-        coords.forEach(([x, y]) => {
-            (squares[x][y]).classList.add('highlight')
+    const highlightSquares = (squares, positions) => {
+        positions.forEach(pos => {
+            squares[pos].classList.add('highlight')
         })
     }
 
     // Reset all the squares of the _board, removing the marks
     const _resetSquares = () => {
-        _board.forEach((row, i) => {
-            row.forEach((col, j) => _board[i][j] = '');
-        })
+        _board.forEach((pos, i) => _board[i] = '');
     }
 
     // Reset all the squares of the DOMBoard, removing the marks and the highlights-
@@ -125,13 +109,11 @@ export default (function(tableElement) {
         init,
         placeMarker,
         getBoard,
-        getChunkedDOMBoard,
+        getDOMBoard,
         resetBoard,
         highlightSquares,
         isMarked,
-        rowCoords,
-        colCoords,
-        diagCoords
+        winnerSequences
     }
 
 })(document.querySelector('table'))
