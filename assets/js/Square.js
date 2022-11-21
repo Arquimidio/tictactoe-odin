@@ -5,6 +5,7 @@ export default function Square(table, position){
   const squareElement = document.createElement('td');
   squareElement.dataset.pos = position;
   squareElement.classList.add('square');
+  table.append(squareElement);
 
   const highlight = () => squareElement.classList.add('highlight');
   const isChecked = () => !!mark;
@@ -20,8 +21,6 @@ export default function Square(table, position){
     squareElement.classList.remove('highlight');
     mark = '';
   }
-
-  table.append(squareElement);
 
   return {
     check,

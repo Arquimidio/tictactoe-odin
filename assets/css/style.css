@@ -5,14 +5,23 @@
 }
 
 :root {
+    --ff: 'Verdana', sans-serif;
     --body-bg: rgb(55, 55, 55);
     --font-color: #fff;
+    --square-size: 50px;
+    --highlight-color: rgb(30, 113, 180);
 }
 
 body {
     min-height: 100vh;
     background-color: var(--body-bg);
     color: var(--font-color);
+    font-family: var(--ff);
+    font-weight: bold;
+}
+
+.names {
+    min-width: 400px;
 }
 
 table {
@@ -23,7 +32,7 @@ table {
 
 tr {
     display: grid;
-    gap: .5rem;
+    gap: 1.5rem;
     grid-template-columns: repeat(3, 1fr);
 }
 
@@ -32,10 +41,14 @@ tr {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: lightgray;
-    width: 50px;
-    height: 50px;
+    width: var(--square-size);
+    height: var(--square-size);
     cursor: pointer;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    background: #373737;
+    box-shadow:  5px 5px 0px #2f2f2f,
+                -5px -5px 0px #3f3f3f;
 }
 
 .centralize {
@@ -50,8 +63,13 @@ tr {
     gap: 1rem;
 }
 
+.space-between {
+    display: flex;
+    justify-content: space-between;
+}
+
 .highlight {
-    color: blue;
+    color: var(--highlight-color);
 }
 
 .hide {
