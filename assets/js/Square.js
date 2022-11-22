@@ -11,8 +11,15 @@ export default function Square(table, position){
   const isChecked = () => !!mark;
   const getMark = () => mark;
 
+  const makeMarkerElement = (marker) => {
+    const markerElement = document.createElement('span');
+    markerElement.textContent = marker;
+    markerElement.classList.add('marker');
+    return markerElement;
+  }
+
   const check = (givenMark) => {
-    squareElement.textContent = givenMark;
+    squareElement.append(makeMarkerElement(givenMark));
     mark = givenMark;
   }
 

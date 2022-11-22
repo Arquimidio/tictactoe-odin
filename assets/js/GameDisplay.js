@@ -13,7 +13,7 @@ export default (function(){
             toShow.forEach(element => element.show && element.show());
             toExecute.forEach(fn => fn());
             setTimeout(() => {
-                toShow.forEach(element => element.hide && element.hide());
+                toHide.forEach(element => element.hide && element.hide());
             }, time)
         }, time)
     } 
