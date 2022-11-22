@@ -8,9 +8,12 @@
     --ff: 'Verdana', sans-serif;
     --body-bg: rgb(55, 55, 55);
     --font-color: #fff;
-    --square-size: 50px;
+    --font-size: clamp(1rem, 10vw, 25rem);
+    --square-size: calc(var(--font-size) + 1rem);
     --main-green: rgb(48, 173, 121);
     --modal-bg: rgba(0, 0, 0, 0.267);
+    --square-bg: rgb(44, 44, 44);
+    --score-size: 10vw;
 }
 
 body {
@@ -22,8 +25,12 @@ body {
 }
 
 .names {
-    min-width: 400px;
+    width: 100%;
+    background-color: var(--main-green);
+    padding: 1rem;
+    font-size: 2vw;
 }
+
 
 .winner-screen {
     position: fixed;
@@ -42,16 +49,11 @@ body {
     border-bottom: 2px solid white;
 }
 
-table {
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-}
-
 tr {
     display: grid;
-    gap: 1.5rem;
+    gap: 1rem;
     grid-template-columns: repeat(3, 1fr);
+    min-height: 50vh;
 }
 
 .square {
@@ -59,14 +61,12 @@ tr {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     width: var(--square-size);
     height: var(--square-size);
-    cursor: pointer;
-    font-size: 1.5rem;
-    border-radius: 10px;
-    background: #373737;
-    box-shadow:  5px 5px 0px #2f2f2f,
-                -5px -5px 0px #3f3f3f;
+    font-size: var(--font-size);
+    background-color: var(--square-bg);
+    border: 1px solid var(--main-green);
 }
 
 .centralize {
